@@ -24,7 +24,7 @@ namespace Model.Behaviours
             if (timer >= time) return false;
             
             var part = (float)Math.Round(timer / time, 2);
-            figure.transform.rotation = Quaternion.Euler(from + (to - from) * part);
+            figure.transform.localRotation = Quaternion.Euler(from + (to - from) * part);
 
             return true;
         }
