@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Model;
 using Model.Behaviours;
 using Model.State;
@@ -12,35 +14,19 @@ namespace SergeyPchelintsev.Controllers
         [SerializeField] private ObjectType figureType;
 
         private List<IBehaviour> behaviours = new List<IBehaviour>();
-
-        private const float Frequency = 0.02f;
-
+        private bool isAllFinished;
+        
         internal List<IBehaviour> Behaviours => behaviours;
         internal ObjectType FigureType => figureType;
         internal float Timer { get; set; }
 
-        private void Start()
+        private void Update()
         {
-            StartCoroutine(RunBehaviours());
-        }
+            if (isAllFinished) return;
 
-        private IEnumerator RunBehaviours()
-        {
-            var performingCount = int.MaxValue;
-            
-            while(performingCount > 0)
-            {
-                performingCount = 0;
-                
-                foreach (var behaviour in behaviours)
-                {
-                    if (behaviour.Act(this, Timer)) performingCount++;
-                }
- 
-                yield return new WaitForSeconds(Frequency);
-                
-                Timer += Frequency;
-            }
+            Timer += Time.deltaTime;
+            var performingCount = behaviours.Count(behaviour => behaviour.Act(this, Timer));
+            if (performingCount == 0) isAllFinished = true;
         }
         
         private void OnDestroy()
